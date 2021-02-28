@@ -32,7 +32,8 @@ class Sudoku:
         [x, y] = self.find_sq()
         for i in range(3 * x, 3 * (x + 1)):
             for j in range(3 * y, 3 * (y + 1)):
-                if self.grid[i][j] == self.grid[self.cell_row][self.cell_col] and i != self.cell_row and j != self.cell_col:
+                if self.grid[i][j] == self.grid[self.cell_row][
+                    self.cell_col] and i != self.cell_row and j != self.cell_col:
                     return False
         return True
 
@@ -95,3 +96,17 @@ class Sudoku:
         if len(self.spaces_dict) == 0:
             return True
         return False
+
+    def valid_initial_grid(self):
+        for i in range(9):
+            if sum(self.grid[i]) != sum(set(self.grid[i])):  # validate row (no duplicate values)
+                return False
+            if sum(self.grid[:, i]) != sum(set(self.grid[:, i])):   # validate column
+                return False
+        for i in range(3):
+            for j in range(3):  # validate squares
+                if (sum(self.grid[3 * i:3 * (i + 1), 3 * j:3 * (j + 1)].flatten()) !=
+                        sum(set(self.grid[3 * i:3 * (i + 1), 3 * j:3 * (j + 1)].flatten()))):
+                    return False
+
+        return True
