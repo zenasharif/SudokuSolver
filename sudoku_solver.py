@@ -5,12 +5,12 @@ from Sudoku import Sudoku
 
 def sudoku_solver(sudoku):
     s = Sudoku(sudoku)
-    if s.valid_initial_grid():
-        #  print("I'm valid!")
+    if s.valid_grid():
+        # print("I'm valid!")
         result = sudoku_solver_recursive(s)
         if result is not None:
             return result.grid
-    #  print("I'm NOT valid!")
+    # print("I'm NOT valid!")
     sudoku.fill(float(-1))
     return sudoku  # 9x9 numpy array of -1s
 
@@ -32,35 +32,45 @@ def sudoku_solver_recursive(sudoku):
         9x9 numpy array of integers
             It contains the solution, if there is one. If there is no solution, all array entries should be -1.
     """
-    # update = True
-    # while update and not sudoku.invalid():
-    #     update = False
-    #
-    #     inserted = []
-    #     for space in sudoku.spaces_dict.keys:
-    #         # insert singleton values
-    #         if len(sudoku.spaces_dict[space]) == 1:
-    #             sudoku.grid[space[0]][space[1]] = sudoku.spaces_dict[space][0]  # get only thing in list
-    #             inserted.append(space)
-    #             update = True
-    #     for space in inserted:
-    #         del sudoku.spaces_dict[space]
-    #     sudoku.update_dict()
+    # print("Entered sudoku_solver")
+    # print(sudoku)
+    # print(sudoku.spaces_dict)
 
-    #  print("Entered sudoku_solver")
-    #  print(sudoku)
-    #  print(sudoku.spaces_dict)
+    update = True
+    while update and not sudoku.invalid():
+        update = False
+
+        inserted = []
+        for space in sudoku.spaces_dict.keys():
+            # insert singleton values
+            if len(sudoku.spaces_dict[space]) == 1:
+                # print("found singleton in space", space, sudoku.spaces_dict[space])
+                sudoku.grid[space[0]][space[1]] = sudoku.spaces_dict[space][0]  # get only thing in list
+                inserted.append(space)
+                update = True
+        if len(inserted) > 0:
+            for space in inserted:
+                del sudoku.spaces_dict[space]
+            sudoku.update_dict()
+            if not sudoku.valid_grid():
+                return None
+
     if sudoku.invalid():
-        #  print("Invalid")
+        # print("Invalid")
         return None
-    if sudoku.solved():
-        #  print("Solved")
+
+    # if not sudoku.valid_grid():
+    #     # print("Invalid")
+    #     return None
+
+    elif sudoku.solved():
+        # print("Solved")
         return sudoku
     else:
         sorted_list_of_keys = sorted(sudoku.spaces_dict.keys(),
                                      key=lambda x: (len(sudoku.spaces_dict[x])))
         space = sorted_list_of_keys[0]  # potentially choose key with least options
-        #  print("Looking at space ", space, "with values: ", sudoku.spaces_dict[space])
+        # print("Looking at space ", space, "with values: ", sudoku.spaces_dict[space])
         for value in sudoku.spaces_dict[space]:
             new = copy.deepcopy(sudoku)
             new.grid[space[0]][space[1]] = value
@@ -68,7 +78,7 @@ def sudoku_solver_recursive(sudoku):
             # new.cell_col = space[1]
             del new.spaces_dict[space]
             new.update_dict()
-            #  print("About to be recursive")
+            # print("About to be recursive")
             result = sudoku_solver_recursive(new)
             if result is not None and result.solved():
                 return result

@@ -97,7 +97,7 @@ class Sudoku:
             return True
         return False
 
-    def valid_initial_grid(self):
+    def valid_grid(self):
         for i in range(9):
             if sum(self.grid[i]) != sum(set(self.grid[i])):  # validate row (no duplicate values)
                 return False
