@@ -1,4 +1,5 @@
 import copy
+from collections import Counter
 
 from Sudoku import Sudoku
 
@@ -6,14 +7,10 @@ from Sudoku import Sudoku
 def sudoku_solver(sudoku):
     s = Sudoku(sudoku)
     if s.valid_grid():
-        # print("I'm valid!")
         result = sudoku_solver_recursive(s)
         if result is not None:
-            print(result.grid)
             return result.grid
-    # print("I'm NOT valid!")
     sudoku.fill(float(-1))
-    print(sudoku)
     return sudoku  # 9x9 numpy array of -1s
 
 
@@ -34,9 +31,6 @@ def sudoku_solver_recursive(sudoku):
         9x9 numpy array of integers
             It contains the solution, if there is one. If there is no solution, all array entries should be -1.
     """
-    # print("Entered sudoku_solver")
-    # print(sudoku)
-    # print(sudoku.spaces_dict)
 
     update = True
     while update and not sudoku.invalid():
@@ -46,7 +40,6 @@ def sudoku_solver_recursive(sudoku):
         for space in sudoku.spaces_dict.keys():
             # insert singleton values
             if len(sudoku.spaces_dict[space]) == 1:
-                # print("found singleton in space", space, sudoku.spaces_dict[space])
                 sudoku.grid[space[0]][space[1]] = sudoku.spaces_dict[space][0]  # get only thing in list
                 inserted.append(space)
                 update = True
@@ -121,55 +114,71 @@ def sudoku_solver_recursive(sudoku):
                 del sudoku.spaces_dict[space]
             sudoku.update_dict()
 
+        if not update:
+            # sibling finder - doesn't change grid just isolates siblings in dictionary
+            for i in range(9):
+                row_spaces = []
+                col_spaces = []
+                sq_spaces = []
+                row_values = []
+                col_values = []
+                sq_values = []
+                for space in list(sudoku.spaces_dict):
+                    if space[0] == i:
+                        row_spaces.append(space)
+                        row_values.append(sudoku.spaces_dict[space])
+                    if space[1] == i:
+                        col_spaces.append(space)
+                        col_values.append(sudoku.spaces_dict[space])
+                    if space[0] // 3 == space_to_square[i][0] and space[1] // 3 == space_to_square[i][1]:
+                        sq_spaces.append(space)
+                        sq_values.append(sudoku.spaces_dict[space])
+                # maps list of spaces_dict values to tuples then uses Counter to count occurrences of each tuple
+                row_siblings_to_sibling_count_dict = dict(Counter(map(tuple, row_values)))
+                col_siblings_to_sibling_count_dict = dict(Counter(map(tuple, col_values)))
+                sq_siblings_to_sibling_count_dict = dict(Counter(map(tuple, sq_values)))
+
+                for key in row_siblings_to_sibling_count_dict.keys():
+                    if len(key) == row_siblings_to_sibling_count_dict[key]:
+                        for space in row_spaces:
+                            if sudoku.spaces_dict[space] != list(key):
+                                temp_dict_values = [x for x in sudoku.spaces_dict[space] if x not in list(key)]
+                                if sudoku.spaces_dict[space] != temp_dict_values:
+                                    sudoku.spaces_dict[space] = temp_dict_values
+                                    update = True
+
+                for key in col_siblings_to_sibling_count_dict.keys():
+                    if len(key) == col_siblings_to_sibling_count_dict[key]:
+                        for space in col_spaces:
+                            if sudoku.spaces_dict[space] != list(key):
+                                temp_dict_values = [x for x in sudoku.spaces_dict[space] if x not in list(key)]
+                                if sudoku.spaces_dict[space] != temp_dict_values:
+                                    sudoku.spaces_dict[space] = temp_dict_values
+                                    update = True
+
+                for key in sq_siblings_to_sibling_count_dict.keys():
+                    if len(key) == sq_siblings_to_sibling_count_dict[key]:
+                        for space in sq_spaces:
+                            if sudoku.spaces_dict[space] != list(key):
+                                temp_dict_values = [x for x in sudoku.spaces_dict[space] if x not in list(key)]
+                                if sudoku.spaces_dict[space] != temp_dict_values:
+                                    sudoku.spaces_dict[space] = temp_dict_values
+                                    update = True
+
     if sudoku.invalid():
-        # print("Invalid")
         return None
 
-    # if not sudoku.valid_grid():
-    #     # print("Invalid")
-    #     return None
-
     elif sudoku.solved():
-        # print("Solved")
         return sudoku
     else:
-        sorted_list_of_keys = sorted(sudoku.spaces_dict.keys(),
-                                     key=lambda x: (len(sudoku.spaces_dict[x])))
-        space = sorted_list_of_keys[0]  # potentially choose key with least options
-        # print("Looking at space ", space, "with values: ", sudoku.spaces_dict[space])
+        sorted_list_of_keys = sorted(sudoku.spaces_dict.keys(), key=lambda x: (len(sudoku.spaces_dict[x])))
+        space = sorted_list_of_keys[0]
         for value in sudoku.spaces_dict[space]:
             new = copy.deepcopy(sudoku)
             new.grid[space[0]][space[1]] = value
-            # new.cell_row = space[0]
-            # new.cell_col = space[1]
             del new.spaces_dict[space]
             new.update_dict()
-            # print("About to be recursive")
             result = sudoku_solver_recursive(new)
             if result is not None and result.solved():
                 return result
         return None
-
-        # if invalid
-        # return false and try another value (go up a level) - return none
-        # if completed
-        # return the sudoku
-        # else
-        # for space in spaces
-        # for value in possible values for that space
-        # guess a value
-        # result = sudoku_solver(new_sudoku)
-        # if result not none and is complete
-        # return result
-        # return none
-
-
-    # While update and not invalid
-    # update = false
-    # check single values - insert all of them
-    # update = true
-    # check unique values and insert all of them
-    # update = true
-    # check siblings and insert
-    # update = true
-    # refresh sudoku
