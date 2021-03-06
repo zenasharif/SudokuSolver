@@ -20,13 +20,14 @@ for diff in difficulties:
         # print("Solution", i, "in", diff)
         # print(solutions[i])
 
-        print(np.array_equal(sudoku_solver(sudoku[i]), solutions[i]))
+        print(diff, i)
+        print(solutions[i])
         print("time for sudoku", i, time()-ind_start_time)
+        print(np.array_equal(sudoku_solver(sudoku[i]), solutions[i]))
 print("time for all", time()-start_time)
 
-# sudoku = np.load("data/hard_puzzle.npy")
-# solution = np.load("data/hard_solution.npy")
-#
-# print(sudoku[2])
-# # print(sudoku_solver(sudoku[4]))
-# print(np.array_equal(sudoku_solver(sudoku[2]), solution[2]))
+sudoku = np.load("data/hard_puzzle.npy")
+solution = np.load("data/hard_solution.npy")
+
+# print(sudoku[14])
+# print(np.array_equal(sudoku_solver(sudoku[14]), solution[14]))

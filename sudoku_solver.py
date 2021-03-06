@@ -9,9 +9,11 @@ def sudoku_solver(sudoku):
         # print("I'm valid!")
         result = sudoku_solver_recursive(s)
         if result is not None:
+            print(result.grid)
             return result.grid
     # print("I'm NOT valid!")
     sudoku.fill(float(-1))
+    print(sudoku)
     return sudoku  # 9x9 numpy array of -1s
 
 
@@ -55,6 +57,70 @@ def sudoku_solver_recursive(sudoku):
             if not sudoku.valid_grid():
                 return None
 
+        inserted = []
+        space_to_square = dict()
+        space_to_square[0] = (0, 0)
+        space_to_square[1] = (0, 1)
+        space_to_square[2] = (0, 2)
+        space_to_square[3] = (1, 0)
+        space_to_square[4] = (1, 1)
+        space_to_square[5] = (1, 2)
+        space_to_square[6] = (2, 0)
+        space_to_square[7] = (2, 1)
+        space_to_square[8] = (2, 2)
+
+        for i in range(9):
+            row_spaces = []
+            col_spaces = []
+            sq_spaces = []
+            row_values = []
+            col_values = []
+            sq_values = []
+            for s in sudoku.spaces_dict.keys():
+                if s[0] == i:
+                    row_spaces.append(s)
+                    row_values.extend(sudoku.spaces_dict[s])
+                if s[1] == i:
+                    col_spaces.append(s)
+                    col_values.extend(sudoku.spaces_dict[s])
+                if s[0] // 3 == space_to_square[i][0] and s[1] // 3 == space_to_square[i][1]:
+                    sq_spaces.append(s)
+                    sq_values.extend(sudoku.spaces_dict[s])
+
+            row_unique_values = [value for value in list(set(row_values)) if row_values.count(value) == 1]
+            col_unique_values = [value for value in list(set(col_values)) if col_values.count(value) == 1]
+            sq_unique_values = [value for value in list(set(sq_values)) if sq_values.count(value) == 1]
+
+            for val in row_unique_values:
+                for s in row_spaces:
+                    if val in sudoku.spaces_dict[s]:
+                        sudoku.grid[s] = val
+                        inserted.append(s)
+                        update = True
+                        break
+
+            for val in col_unique_values:
+                for s in col_spaces:
+                    if val in sudoku.spaces_dict[s]:
+                        sudoku.grid[s] = val
+                        inserted.append(s)
+                        update = True
+                        break
+
+            for val in sq_unique_values:
+                for s in sq_spaces:
+                    if val in sudoku.spaces_dict[s]:
+                        sudoku.grid[s] = val
+                        inserted.append(s)
+                        update = True
+                        break
+
+        if len(inserted) > 0:
+            # make inserted spaces a set in case the cell has a unique value in the row and column
+            for space in list(set(inserted)):
+                del sudoku.spaces_dict[space]
+            sudoku.update_dict()
+
     if sudoku.invalid():
         # print("Invalid")
         return None
@@ -97,62 +163,6 @@ def sudoku_solver_recursive(sudoku):
         # return result
         # return none
 
-        # # insert unique values in rows
-        # for i in range(9):
-        #     row_spaces = []
-        #     values = []
-        #     unique = []
-        #     for s in sudoku.spaces_dict.keys:
-        #         if s[0] == i:
-        #             row_spaces.append(s)
-        #             values.append(sudoku.spaces_dict[s])
-        #
-        #     # finding unique values by sorting list and comparing element to prev and next
-        #     values.sort()
-        #     if values[0] != values[1]:
-        #         unique.append(values[0])
-        #     for val in range(1, len(values) - 1):
-        #         if values[val] != values[val + 1] and values[val] != values[val - 1]:
-        #             unique.append(values[val])
-        #     if values[len(values) - 2] != values[len(values) - 1]:
-        #         unique.append(values[len(values) - 1])
-        #
-        #     # if we have any unique values
-        #     if len(unique) > 0:
-        #         # I thought it would be quicker to loop through the spaces in row than looping through all of
-        #         # them again?
-        #
-        #         # not sure which way round these for loops should go...
-        #         # for each unique value, look through spaces and find the one containing it
-        #         for val in unique:
-        #             for s in row_spaces:
-        #                 if val in sudoku.spaces_dict[s]:
-        #                     sudoku.grid[s] = val
-        #
-        # # insert unique values in column - same as above for columns
-        # for i in range(9):
-        #     col_spaces = []
-        #     values = []
-        #     unique = []
-        #     for s in sudoku.spaces_dict.keys:
-        #         if s[0] == i:
-        #             col_spaces.append(s)
-        #             values.append(sudoku.spaces_dict[s])
-        #     values.sort()
-        #     if values[0] != values[1]:
-        #         unique.append(values[0])
-        #     for val in range(1, len(values) - 1):
-        #         if values[val] != values[val + 1] and values[val] != values[val - 1]:
-        #             unique.append(values[val])
-        #     if values[len(values) - 2] != values[len(values) - 1]:
-        #         unique.append(values[len(values) - 1])
-        #     if len(unique) > 0:
-        #         for s in col_spaces:
-        #             for val in unique:
-        #                 if val in sudoku.spaces_dict[s]:
-        #                     sudoku.grid[s] = val
-
-        # should I do the above for squares?
 
     # While update and not invalid
     # update = false
