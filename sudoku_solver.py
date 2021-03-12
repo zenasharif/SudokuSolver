@@ -35,13 +35,13 @@ def sudoku_solver_recursive(sudoku):
         update = False
 
         update = sudoku.insert_singleton_values(update)
-        if not sudoku.valid_grid():
-            return None
 
         update = sudoku.insert_unique_values(update)
 
-        if not update:
-            update = sudoku.isolate_sibling_values(update)
+        update = sudoku.isolate_sibling_values(update)
+
+        if not sudoku.valid_grid():
+            return None
 
     if sudoku.invalid_spaces_dict():
         return None

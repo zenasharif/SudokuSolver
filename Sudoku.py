@@ -258,6 +258,7 @@ class Sudoku:
         :param update: boolean
         :return: update boolean
         """
+
         space_to_square = get_squares_dict()
         for i in range(9):
             row_spaces = []
@@ -291,6 +292,9 @@ class Sudoku:
                                 self.spaces_dict[space] = temp_dict_values
                                 update = True
 
+            if update:
+                return update
+
             for key in col_siblings_to_sibling_count_dict.keys():
                 if len(key) == col_siblings_to_sibling_count_dict[key]:
                     for space in col_spaces:
@@ -300,6 +304,9 @@ class Sudoku:
                                 self.spaces_dict[space] = temp_dict_values
                                 update = True
 
+            if update:
+                return update
+
             for key in sq_siblings_to_sibling_count_dict.keys():
                 if len(key) == sq_siblings_to_sibling_count_dict[key]:
                     for space in sq_spaces:
@@ -308,4 +315,6 @@ class Sudoku:
                             if self.spaces_dict[space] != temp_dict_values:
                                 self.spaces_dict[space] = temp_dict_values
                                 update = True
-            return update
+            if update:
+                return update
+        return update
