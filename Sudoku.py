@@ -250,7 +250,7 @@ class Sudoku:
             self.update_dict()
         return update
 
-    def isolate_sibling_values(self, update):
+    def isolate_identical_groups(self, update):
         """
         For each row / column / square, finds lists of valid actions in the spaces_dict whose length is equal to
         their count. The values in these lists must occur in those spaces and therefore can be deleted from other

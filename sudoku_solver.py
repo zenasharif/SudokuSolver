@@ -38,7 +38,7 @@ def sudoku_solver_recursive(sudoku):
 
         update = sudoku.insert_unique_values(update)
 
-        update = sudoku.isolate_sibling_values(update)
+        update = sudoku.isolate_identical_groups(update)
 
         if not sudoku.valid_grid():
             return None
