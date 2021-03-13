@@ -171,7 +171,7 @@ class Sudoku:
                     return False
         return True
 
-    def insert_singleton_values(self, update):
+    def insert_single_values(self, update):
         """
         Inserts all values in dictionary with length 1 - the only valid action for this space
         :param update: boolean
@@ -279,12 +279,12 @@ class Sudoku:
                     sq_values.append(self.spaces_dict[space])
 
             # maps list of spaces_dict values to tuples then uses Counter to count occurrences of each tuple
-            row_siblings_to_sibling_count_dict = dict(Counter(map(tuple, row_values)))
-            col_siblings_to_sibling_count_dict = dict(Counter(map(tuple, col_values)))
-            sq_siblings_to_sibling_count_dict = dict(Counter(map(tuple, sq_values)))
+            row_groups_to_group_count_dict = dict(Counter(map(tuple, row_values)))
+            col_groups_to_group_count_dict = dict(Counter(map(tuple, col_values)))
+            sq_groups_to_group_count_dict = dict(Counter(map(tuple, sq_values)))
 
-            for key in row_siblings_to_sibling_count_dict.keys():
-                if len(key) == row_siblings_to_sibling_count_dict[key]:
+            for key in row_groups_to_group_count_dict.keys():
+                if len(key) == row_groups_to_group_count_dict[key]:
                     for space in row_spaces:
                         if self.spaces_dict[space] != list(key):
                             temp_dict_values = [x for x in self.spaces_dict[space] if x not in list(key)]
@@ -295,8 +295,8 @@ class Sudoku:
             if update:
                 return update
 
-            for key in col_siblings_to_sibling_count_dict.keys():
-                if len(key) == col_siblings_to_sibling_count_dict[key]:
+            for key in col_groups_to_group_count_dict.keys():
+                if len(key) == col_groups_to_group_count_dict[key]:
                     for space in col_spaces:
                         if self.spaces_dict[space] != list(key):
                             temp_dict_values = [x for x in self.spaces_dict[space] if x not in list(key)]
@@ -307,8 +307,8 @@ class Sudoku:
             if update:
                 return update
 
-            for key in sq_siblings_to_sibling_count_dict.keys():
-                if len(key) == sq_siblings_to_sibling_count_dict[key]:
+            for key in sq_groups_to_group_count_dict.keys():
+                if len(key) == sq_groups_to_group_count_dict[key]:
                     for space in sq_spaces:
                         if self.spaces_dict[space] != list(key):
                             temp_dict_values = [x for x in self.spaces_dict[space] if x not in list(key)]

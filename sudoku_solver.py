@@ -34,7 +34,7 @@ def sudoku_solver_recursive(sudoku):
     while update and not sudoku.invalid_spaces_dict():
         update = False
 
-        update = sudoku.insert_singleton_values(update)
+        update = sudoku.insert_single_values(update)
 
         update = sudoku.insert_unique_values(update)
 
